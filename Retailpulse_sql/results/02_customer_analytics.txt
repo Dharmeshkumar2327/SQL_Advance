@@ -1,0 +1,75 @@
+SET
+     segment      | customers | pct_customers | avg_recency_days | avg_orders | avg_spend | pct_revenue 
+------------------+-----------+---------------+------------------+------------+-----------+-------------
+ Champions        |       498 |          12.8 |               41 |        7.7 |    280262 |        31.8
+ Loyal            |       969 |          24.9 |               87 |        4.6 |    130161 |        28.8
+ Cannot Lose Them |       550 |          14.2 |              419 |        6.5 |    182043 |        22.8
+ At Risk          |       646 |          16.6 |              464 |        2.1 |     71765 |        10.6
+ New / Promising  |       574 |          14.8 |               47 |        1.4 |     27445 |         3.6
+ Need Attention   |       289 |           7.4 |              131 |        1.3 |     28262 |         1.9
+ Hibernating      |       358 |           9.2 |              512 |        1.0 |      6697 |         0.5
+(7 rows)
+
+ cohort_month | cohort_size |  m1  |  m2  |  m3  |  m6  | m12  
+--------------+-------------+------+------+------+------+------
+ 2024-01-01   |          75 | 33.3 | 30.7 | 17.3 | 24.0 |  5.3
+ 2024-02-01   |          85 | 43.5 | 35.3 | 27.1 | 20.0 |  4.7
+ 2024-03-01   |         101 | 33.7 | 28.7 | 24.8 | 15.8 |  4.0
+ 2024-04-01   |         111 | 36.0 | 28.8 | 27.9 | 26.1 |  7.2
+ 2024-05-01   |         117 | 31.6 | 29.1 | 32.5 | 22.2 |  8.5
+ 2024-06-01   |         113 | 31.0 | 22.1 | 23.9 | 18.6 | 11.5
+ 2024-07-01   |         118 | 37.3 | 28.8 | 34.7 | 18.6 |  7.6
+ 2024-08-01   |         111 | 26.1 | 34.2 | 31.5 | 13.5 |  6.3
+ 2024-09-01   |         112 | 42.9 | 37.5 | 23.2 | 24.1 |  8.9
+ 2024-10-01   |         211 | 23.7 | 17.5 | 22.7 | 10.9 | 17.5
+ 2024-11-01   |         167 | 26.3 | 25.7 | 21.0 | 12.6 | 16.8
+ 2024-12-01   |         106 | 23.6 | 28.3 | 23.6 | 16.0 |  4.7
+(12 rows)
+
+ acquisition_channel | customers | buyer_rate_pct | repeat_rate_pct | mean_ltv | median_ltv | median_days_between_orders 
+---------------------+-----------+----------------+-----------------+----------+------------+----------------------------
+ Social              |       987 |           79.7 |            73.6 |   117928 |      65481 |                         33
+ Referral            |       627 |           75.9 |            72.5 |   116352 |      68322 |                         28
+ Email               |       402 |           78.4 |            74.0 |   112389 |      68478 |                         32
+ Organic             |      1745 |           77.4 |            72.8 |   110891 |      67850 |                         33
+ Paid Search         |      1239 |           77.1 |            72.8 |   110043 |      62870 |                         32
+(5 rows)
+
+ customer_id |   full_name   |   city    | account_manager | orders | lifetime_spend | usual_gap_days | days_silent | silence_ratio 
+-------------+---------------+-----------+-----------------+--------+----------------+----------------+-------------+---------------
+        4734 | Aadhya Pillai | Patna     | Manish Joshi    |     26 |     1487060.50 |             13 |         161 |          12.1
+        3052 | Diya Shah     | Delhi     | Meera Reddy     |     14 |     1071580.00 |             15 |         170 |          11.3
+         975 | Vivaan Patel  | Chennai   | Rahul Singh     |     14 |      941827.96 |             43 |         201 |           4.7
+        2554 | Aditya Iyer   | Pune      | Kavya Kulkarni  |     21 |      859908.50 |             14 |         241 |          16.7
+        2887 | Harsh Verma   | Ahmedabad | Varun Gupta     |     13 |      812096.90 |             39 |         129 |           3.3
+        2894 | Sanya Iyer    | Ahmedabad | Neha Menon      |     21 |      768727.12 |             25 |         245 |           9.8
+        3850 | Nikhil Nair   | Jaipur    | Divya Menon     |     15 |      755192.02 |             25 |         331 |          13.4
+        3291 | Rohan Iyer    | Delhi     | Aditya Bose     |     23 |      724804.96 |             30 |         131 |           4.4
+        4371 | Tanvi Sharma  | Kolkata   | Ishita Reddy    |     18 |      720834.14 |             28 |         404 |          14.2
+        1288 | Aditya Iyer   | Hyderabad | Siddharth Joshi |     14 |      718539.62 |             33 |         285 |           8.7
+         618 | Aditya Kumar  | Bengaluru | Rahul Singh     |     15 |      711070.00 |             13 |         258 |          20.0
+          30 | Sanya Shah    | Bengaluru | Rahul Singh     |     19 |      671932.50 |             14 |         216 |          15.3
+        1895 | Ishaan Mishra | Mumbai    | Varun Gupta     |     10 |      671677.00 |             17 |         298 |          17.8
+        2136 | Aarav Pillai  | Mumbai    | Kavya Kulkarni  |     23 |      666944.50 |              7 |         107 |          16.3
+        1852 | Myra Singh    | Mumbai    | Varun Gupta     |      3 |      666860.00 |             64 |         344 |           5.4
+(15 rows)
+
+ top_customers | pct_of_revenue 
+---------------+----------------
+ Top 1%        |            6.9
+ Top 5%        |           23.7
+ Top 10%       |           38.4
+ Top 20%       |           59.3
+ Top 50%       |           91.5
+(5 rows)
+
+      bucket       | customers | pct  
+-------------------+-----------+------
+ 1. Within 30 days |      1307 | 33.7
+ 2. 31-90 days     |       784 | 20.2
+ 3. 91-180 days    |       378 |  9.7
+ 4. 181-365 days   |       256 |  6.6
+ 5. Over a year    |       111 |  2.9
+ 6. Never (so far) |      1048 | 27.0
+(6 rows)
+

@@ -1,0 +1,118 @@
+SET
+          employee           |      job_title      | lvl | subtree_revenue_lakh | account_mgrs_below 
+-----------------------------+---------------------+-----+----------------------+--------------------
+ Ananya Rao                  | CEO                 |   1 |               2308.5 |                 12
+     Sneha Iyer              | VP Customer Success |   2 |                900.4 |                  6
+         Arjun Patel         | Regional Manager    |   3 |                575.9 |                  3
+             Kavya Kulkarni  | Account Manager     |   4 |                220.9 |                  1
+             Neha Menon      | Account Manager     |   4 |                193.4 |                  1
+             Varun Gupta     | Account Manager     |   4 |                161.5 |                  1
+         Priya Das           | Regional Manager    |   3 |                324.5 |                  3
+             Ishita Reddy    | Account Manager     |   4 |                 99.4 |                  1
+             Karan Bose      | Account Manager     |   4 |                107.4 |                  1
+             Manish Joshi    | Account Manager     |   4 |                117.7 |                  1
+     Vikram Mehta            | VP Sales            |   2 |               1408.1 |                  6
+         Lakshmi Nair        | Regional Manager    |   3 |                820.0 |                  3
+             Pooja Verma     | Account Manager     |   4 |                275.9 |                  1
+             Rahul Singh     | Account Manager     |   4 |                275.1 |                  1
+             Siddharth Joshi | Account Manager     |   4 |                269.0 |                  1
+         Rohit Sharma        | Regional Manager    |   3 |                588.1 |                  3
+             Aditya Bose     | Account Manager     |   4 |                214.0 |                  1
+             Divya Menon     | Account Manager     |   4 |                177.5 |                  1
+             Meera Reddy     | Account Manager     |   4 |                196.6 |                  1
+(19 rows)
+
+           breadcrumb            | depth | products 
+---------------------------------+-------+----------
+ Beauty                          |     0 |        0
+ Beauty / Haircare               |     1 |        9
+ Beauty / Skincare               |     1 |        9
+ Books & Stationery              |     0 |        0
+ Books & Stationery / Books      |     1 |        9
+ Books & Stationery / Stationery |     1 |        9
+ Electronics                     |     0 |        0
+ Electronics / Accessories       |     1 |        9
+ Electronics / Audio             |     1 |        9
+ Electronics / Laptops           |     1 |        9
+ Electronics / Mobiles           |     1 |        9
+ Fashion                         |     0 |        0
+ Fashion / Footwear              |     1 |        9
+ Fashion / Menswear              |     1 |        9
+ Fashion / Womenswear            |     1 |        9
+ Home & Kitchen                  |     0 |        0
+ Home & Kitchen / Appliances     |     1 |        9
+ Home & Kitchen / Cookware       |     1 |        9
+ Home & Kitchen / Decor          |     1 |        9
+(19 rows)
+
+    day     | dow |  revenue   | baseline | z_score | type  
+------------+-----+------------+----------+---------+-------
+ 2024-01-04 | Thu |   63473.90 |   435144 |   -4.77 | Drop
+ 2024-01-10 | Wed |  999839.82 |   338937 |    4.56 | Spike
+ 2024-10-17 | Thu | 1319120.00 |   515336 |    4.55 | Spike
+ 2024-07-11 | Thu | 1096688.00 |   330152 |    4.46 | Spike
+ 2025-10-12 | Sun | 1562045.00 |   518678 |    4.26 | Spike
+ 2024-03-01 | Fri |  883885.86 |   264886 |    4.04 | Spike
+ 2024-06-01 | Sat |  980779.00 |   413875 |    3.95 | Spike
+ 2025-03-12 | Wed | 1168369.00 |   425989 |    3.75 | Spike
+ 2025-09-10 | Wed | 1569217.00 |   560877 |    3.74 | Spike
+ 2025-06-15 | Sun | 1141370.00 |   490456 |    3.67 | Spike
+ 2025-10-11 | Sat | 1230151.50 |   494260 |    3.65 | Spike
+ 2025-11-06 | Thu | 2243918.50 |  1159997 |    3.26 | Spike
+(12 rows)
+
+ lines_checked | charged_correct_price | price_mismatches | no_price_on_date 
+---------------+-----------------------+------------------+------------------
+         32381 |                 32381 |                0 |                0
+(1 row)
+
+ sales_channel | orders | mean_aov | p25  | median |  p90  | most_used_payment | cod_share_pct 
+---------------+--------+----------+------+--------+-------+-------------------+---------------
+ Web           |   6696 |    29746 | 2280 |   6258 | 90073 | UPI               |          14.2
+ App           |   5840 |    29173 | 2280 |   6540 | 89050 | UPI               |          15.6
+ Store         |   2291 |    30096 | 2344 |   6248 | 91400 | UPI               |          16.0
+(3 rows)
+
+            customer_360             
+-------------------------------------
+ {                                  +
+     "city": "Patna",               +
+     "name": "Aadhya Pillai",       +
+     "since": "2024-08-25",         +
+     "customer_id": 4734,           +
+     "recent_orders": [             +
+         {                          +
+             "date": "2025-07-24",  +
+             "amount": 207848.00,   +
+             "status": "Delivered", +
+             "order_id": 12927      +
+         },                         +
+         {                          +
+             "date": "2025-04-18",  +
+             "amount": 5320.00,     +
+             "status": "Returned",  +
+             "order_id": 11031      +
+         },                         +
+         {                          +
+             "date": "2025-02-22",  +
+             "amount": 1020.00,     +
+             "status": "Delivered", +
+             "order_id": 10012      +
+         }                          +
+     ],                             +
+     "lifetime_value": 1487060.50,  +
+     "favourite_category": "Laptops"+
+ }
+(1 row)
+
+                  check_name                  | failures | result 
+----------------------------------------------+----------+--------
+ Duplicate customer emails (case-insensitive) |        0 | PASS
+ Order placed before customer signup          |        0 | PASS
+ Orders without any line items                |        0 | PASS
+ Overlapping price-history periods            |        0 | PASS
+ Product sold before launch date              |        0 | PASS
+ Return dated before its order                |        0 | PASS
+ Returned orders with no return record        |        0 | PASS
+(7 rows)
+

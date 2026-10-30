@@ -1,0 +1,43 @@
+# Builds the database and runs every analysis query on each push.
+# A green badge in the README proves all SQL runs without errors.
+name: SQL tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  run-sql:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready --health-interval 5s
+          --health-timeout 5s --health-retries 10
+    env:
+      PGHOST: localhost
+      PGUSER: postgres
+      PGPASSWORD: postgres
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build database and run all analysis files
+        run: ./run_all.sh retailpulse
+
+      - name: Data-quality checks must all PASS
+        run: |
+          if grep -q "| FAIL" results/05_advanced_patterns.txt; then
+            echo "Data-quality check failed"; exit 1
+          fi
+          echo "All data-quality checks passed"
+
+      - name: Upload query results
+        uses: actions/upload-artifact@v4
+        with:
+          name: query-results
+          path: results/

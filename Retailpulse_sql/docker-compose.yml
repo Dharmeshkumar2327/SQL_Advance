@@ -1,0 +1,17 @@
+# One-command local setup:  docker compose up -d
+# Then connect:             psql -h localhost -U postgres -d retailpulse   (password: postgres)
+services:
+  db:
+    image: postgres:16
+    container_name: retailpulse-db
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: retailpulse
+    ports:
+      - "5432:5432"
+    volumes:
+      # scripts run automatically, in name order, on first start
+      - ./sql/01_schema.sql:/docker-entrypoint-initdb.d/01_schema.sql
+      - ./sql/02_seed_data.sql:/docker-entrypoint-initdb.d/02_seed_data.sql
+      - ./sql/03_views_functions.sql:/docker-entrypoint-initdb.d/03_views_functions.sql
+      - ./sql/04_indexes.sql:/docker-entrypoint-initdb.d/04_indexes.sql

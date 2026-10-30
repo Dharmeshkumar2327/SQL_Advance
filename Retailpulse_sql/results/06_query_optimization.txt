@@ -1,0 +1,146 @@
+SET
+BEGIN
+DROP INDEX
+=== 1a. WITHOUT index on orders(customer_id) -> Seq Scan over every order ===
+                 QUERY PLAN                  
+---------------------------------------------
+ Seq Scan on orders (actual rows=28 loops=1)
+   Filter: (customer_id = 4734)
+   Rows Removed by Filter: 16469
+(3 rows)
+
+CREATE INDEX
+ANALYZE
+=== 1b. WITH index -> Bitmap/Index Scan touches only matching rows ===
+                               QUERY PLAN                               
+------------------------------------------------------------------------
+ Bitmap Heap Scan on orders (actual rows=28 loops=1)
+   Recheck Cond: (customer_id = 4734)
+   Heap Blocks: exact=18
+   ->  Bitmap Index Scan on ix_orders_customer (actual rows=28 loops=1)
+         Index Cond: (customer_id = 4734)
+(5 rows)
+
+=== 2a. NON-sargable: date(order_ts) = ... cannot use ix_orders_ts ===
+                       QUERY PLAN                        
+---------------------------------------------------------
+ Aggregate (actual rows=1 loops=1)
+   ->  Seq Scan on orders (actual rows=49 loops=1)
+         Filter: ((order_ts)::date = '2025-11-01'::date)
+         Rows Removed by Filter: 16448
+(4 rows)
+
+=== 2b. Sargable range rewrite -> index range scan ===
+                                                                         QUERY PLAN                                                                         
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Aggregate (actual rows=1 loops=1)
+   ->  Index Only Scan using ix_orders_ts on orders (actual rows=49 loops=1)
+         Index Cond: ((order_ts >= '2025-11-01 00:00:00'::timestamp without time zone) AND (order_ts < '2025-11-02 00:00:00'::timestamp without time zone))
+         Heap Fetches: 0
+(4 rows)
+
+=== 3a. Correlated subquery (re-executed per row) ===
+                                       QUERY PLAN                                        
+-----------------------------------------------------------------------------------------
+ Seq Scan on orders o (actual rows=3985 loops=1)
+   Filter: (order_ts = (SubPlan 1))
+   Rows Removed by Filter: 12512
+   SubPlan 1
+     ->  Aggregate (actual rows=1 loops=16497)
+           ->  Bitmap Heap Scan on orders o2 (actual rows=7 loops=16497)
+                 Recheck Cond: (customer_id = o.customer_id)
+                 Heap Blocks: exact=109103
+                 ->  Bitmap Index Scan on ix_orders_customer (actual rows=7 loops=16497)
+                       Index Cond: (customer_id = o.customer_id)
+ Planning Time: 0.142 ms
+ Execution Time: 119.388 ms
+(12 rows)
+
+=== 3b. Window function (single pass + sort) ===
+                                              QUERY PLAN                                              
+------------------------------------------------------------------------------------------------------
+ Subquery Scan on t (actual rows=3985 loops=1)
+   Filter: (t.rn = 1)
+   ->  WindowAgg (actual rows=3985 loops=1)
+         Run Condition: (row_number() OVER (?) <= 1)
+         ->  Incremental Sort (actual rows=16497 loops=1)
+               Sort Key: orders.customer_id, orders.order_ts DESC
+               Presorted Key: orders.customer_id
+               Full-sort Groups: 470  Sort Method: quicksort  Average Memory: 26kB  Peak Memory: 26kB
+               ->  Index Scan using ix_orders_customer on orders (actual rows=16497 loops=1)
+ Planning Time: 0.193 ms
+ Execution Time: 11.259 ms
+(11 rows)
+
+=== 3c. PostgreSQL DISTINCT ON (most concise) ===
+                                           QUERY PLAN                                           
+------------------------------------------------------------------------------------------------
+ Unique (actual rows=3985 loops=1)
+   ->  Incremental Sort (actual rows=16497 loops=1)
+         Sort Key: customer_id, order_ts DESC
+         Presorted Key: customer_id
+         Full-sort Groups: 470  Sort Method: quicksort  Average Memory: 26kB  Peak Memory: 26kB
+         ->  Index Scan using ix_orders_customer on orders (actual rows=16497 loops=1)
+ Planning Time: 0.128 ms
+ Execution Time: 9.439 ms
+(8 rows)
+
+DROP INDEX
+=== 4a. Price lookup WITHOUT covering index ===
+                                    QUERY PLAN                                    
+----------------------------------------------------------------------------------
+ Limit (actual rows=1 loops=1)
+   ->  Sort (actual rows=1 loops=1)
+         Sort Key: valid_from DESC
+         Sort Method: quicksort  Memory: 25kB
+         ->  Seq Scan on product_price_history (actual rows=2 loops=1)
+               Filter: ((valid_from <= '2025-01-15'::date) AND (product_id = 42))
+               Rows Removed by Filter: 184
+(7 rows)
+
+ROLLBACK
+SET
+VACUUM
+=== 4b. WITH covering index (product_id, valid_from) INCLUDE (price) -> Index Only Scan ===
+                                                 QUERY PLAN                                                 
+------------------------------------------------------------------------------------------------------------
+ Limit (actual rows=1 loops=1)
+   ->  Index Only Scan Backward using ix_price_hist_lookup on product_price_history (actual rows=1 loops=1)
+         Index Cond: ((product_id = 42) AND (valid_from <= '2025-01-15'::date))
+         Heap Fetches: 0
+(4 rows)
+
+=== 5a. Live: monthly KPIs computed from raw tables ===
+                                           QUERY PLAN                                           
+------------------------------------------------------------------------------------------------
+ HashAggregate (actual rows=36 loops=1)
+   Group Key: (date_trunc('month'::text, o.order_ts))::date
+   Batches: 1  Memory Usage: 48kB
+   ->  HashAggregate (actual rows=14827 loops=1)
+         Group Key: o.order_id
+         Batches: 1  Memory Usage: 6161kB
+         ->  Hash Join (actual rows=29035 loops=1)
+               Hash Cond: (i.product_id = p.product_id)
+               ->  Hash Join (actual rows=29035 loops=1)
+                     Hash Cond: (i.order_id = o.order_id)
+                     ->  Seq Scan on order_items i (actual rows=32381 loops=1)
+                     ->  Hash (actual rows=14827 loops=1)
+                           Buckets: 16384  Batches: 1  Memory Usage: 824kB
+                           ->  Seq Scan on orders o (actual rows=14827 loops=1)
+                                 Filter: ((status)::text = ANY ('{Delivered,Shipped}'::text[]))
+                                 Rows Removed by Filter: 1670
+               ->  Hash (actual rows=126 loops=1)
+                     Buckets: 1024  Batches: 1  Memory Usage: 13kB
+                     ->  Seq Scan on products p (actual rows=126 loops=1)
+ Planning Time: 1.030 ms
+ Execution Time: 42.835 ms
+(21 rows)
+
+=== 5b. Pre-computed: read from mv_monthly_kpis ===
+                      QUERY PLAN                      
+------------------------------------------------------
+ Seq Scan on mv_monthly_kpis (actual rows=36 loops=1)
+ Planning Time: 0.178 ms
+ Execution Time: 0.021 ms
+(3 rows)
+
