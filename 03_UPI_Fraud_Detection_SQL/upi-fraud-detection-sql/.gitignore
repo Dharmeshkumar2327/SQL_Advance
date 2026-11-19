@@ -1,0 +1,13 @@
+# generated raw data (re-create with: python data_generator/generate_data.py)
+data/
+# dashboard/data/*.csv IS committed so the dashboard works on Streamlit Cloud
+
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+.DS_Store
+.ipynb_checkpoints/
+.vscode/
+.idea/

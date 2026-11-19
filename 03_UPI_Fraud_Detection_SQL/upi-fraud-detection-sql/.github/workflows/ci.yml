@@ -1,0 +1,52 @@
+name: SQL engine CI
+
+# On every push / PR: spin up PostgreSQL, generate a small dataset, run the
+# whole engine. The SQL test files raise an error (and fail the build) if data
+# quality breaks or precision / recall drop below the quality gates.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: upi_fraud
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s --health-timeout 3s --health-retries 10
+    env:
+      PGHOST: localhost
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      PGDATABASE: upi_fraud
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install generator dependencies
+        run: pip install numpy pandas
+
+      - name: Generate small dataset
+        run: python data_generator/generate_data.py --accounts 10000 --txns 120000
+
+      - name: Run engine + tests
+        run: |
+          mkdir -p dashboard/data
+          psql -q -f sql/run_all.sql
+
+      - name: Run analyst toolkit
+        run: |
+          psql -q -f sql/60_analyst_toolkit/01_rule_tuning_r02.sql
+          psql -q -f sql/60_analyst_toolkit/02_investigate_account.sql > /dev/null
+          psql -q -f sql/60_analyst_toolkit/03_query_performance.sql > /dev/null

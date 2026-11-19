@@ -1,0 +1,26 @@
+# PostgreSQL 16 for the engine. The repo is mounted at /workspace so the
+# pipeline can also run INSIDE the container (no local psql needed):
+#
+#   docker compose up -d
+#   docker compose exec -w /workspace db psql -U postgres -d upi_fraud -f sql/run_all.sql
+services:
+  db:
+    image: postgres:16
+    container_name: upi_fraud_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: upi_fraud
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./:/workspace
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d upi_fraud"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  pgdata:

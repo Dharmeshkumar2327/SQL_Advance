@@ -1,0 +1,8 @@
+# data generator
+numpy>=1.26
+pandas>=2.1
+# dashboard
+streamlit>=1.50
+plotly>=5.20
+# README charts (optional)
+matplotlib>=3.8
