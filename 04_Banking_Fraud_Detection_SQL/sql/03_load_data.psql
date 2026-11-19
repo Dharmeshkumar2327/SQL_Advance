@@ -1,0 +1,8 @@
+-- Run from psql in the project root after creating the schema.
+-- Example: psql -d fraud_db -f sql/01_schema.sql
+-- Then use \copy commands (client-side paths are relative to your current directory).
+\copy customers FROM 'data/customers.csv' WITH (FORMAT csv, HEADER true);
+\copy accounts FROM 'data/accounts.csv' WITH (FORMAT csv, HEADER true);
+\copy merchants FROM 'data/merchants.csv' WITH (FORMAT csv, HEADER true);
+\copy transactions FROM 'data/transactions.csv' WITH (FORMAT csv, HEADER true);
+ANALYZE;
