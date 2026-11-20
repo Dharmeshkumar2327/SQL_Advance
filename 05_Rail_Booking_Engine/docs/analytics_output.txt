@@ -1,0 +1,392 @@
+=== Q01. Journey snapshot: passenger status mix per train-run (pivot with FILTER) ===
+ train_no | journey_date |  status   | cnf  | rac | wl | can | pct_cnf_of_live 
+----------+--------------+-----------+------+-----+----+-----+-----------------
+ 12002    | 2026-11-13   | DEPARTED  |  716 |   0 |  0 | 101 |           100.0
+ 12002    | 2026-11-14   | DEPARTED  |  760 |   0 |  2 |  65 |            99.7
+ 12002    | 2026-11-15   | DEPARTED  |  806 |   0 |  0 | 116 |           100.0
+ 12002    | 2026-11-16   | SCHEDULED |  569 |   0 | 28 |  76 |            95.3
+ 12002    | 2026-11-17   | SCHEDULED |  480 |   0 |  0 |  84 |           100.0
+ 12009    | 2026-11-13   | DEPARTED  |  539 |   0 |  0 |  66 |           100.0
+ 12009    | 2026-11-14   | DEPARTED  |  571 |   0 |  0 |  71 |           100.0
+ 12009    | 2026-11-16   | SCHEDULED |  558 |   0 | 20 |  75 |            96.5
+ 12009    | 2026-11-17   | SCHEDULED |  461 |   0 |  0 |  39 |           100.0
+ 12301    | 2026-11-13   | DEPARTED  |  853 |  69 |  8 | 326 |            91.7
+ 12301    | 2026-11-14   | DEPARTED  |  863 |  36 |  3 | 196 |            95.7
+ 12301    | 2026-11-15   | DEPARTED  |  877 |  68 |  5 | 323 |            92.3
+ 12301    | 2026-11-16   | SCHEDULED |  798 |  56 | 79 |  91 |            85.5
+ 12301    | 2026-11-17   | SCHEDULED |  652 |  16 |  1 |  94 |            97.5
+ 12621    | 2026-11-13   | DEPARTED  | 1293 |  70 |  3 | 428 |            94.7
+ 12621    | 2026-11-14   | DEPARTED  | 1185 |  12 |  3 | 273 |            98.8
+ 12621    | 2026-11-15   | DEPARTED  | 1334 | 125 | 15 | 534 |            90.5
+ 12621    | 2026-11-16   | SCHEDULED | 1211 |  29 | 88 | 148 |            91.2
+ 12621    | 2026-11-17   | SCHEDULED |  899 |  77 |  1 | 122 |            92.0
+ 12627    | 2026-11-13   | DEPARTED  | 1263 | 129 | 13 | 545 |            89.9
+
+=== Q02. Berth-km utilisation by train & class, ranked within each train ===
+ train_no | class_code | avg_util_pct | class_rank 
+----------+------------+--------------+------------
+ 12002    | CC         |         81.2 |          1
+ 12002    | EC         |         71.4 |          2
+ 12009    | CC         |         64.0 |          1
+ 12009    | EC         |         61.7 |          2
+ 12301    | 3A         |         90.9 |          1
+ 12301    | 2A         |         88.6 |          2
+ 12301    | 1A         |         86.0 |          3
+ 12621    | 3A         |         87.3 |          1
+ 12621    | 2A         |         85.3 |          2
+ 12621    | SL         |         84.0 |          3
+ 12621    | 1A         |         79.3 |          4
+ 12627    | 3A         |         90.9 |          1
+ 12627    | SL         |         89.4 |          2
+ 12627    | 2A         |         86.7 |          3
+ 12658    | SL         |         88.4 |          1
+ 12658    | 2S         |         86.2 |          2
+ 12658    | 2A         |         82.5 |          3
+ 12658    | 3A         |         82.4 |          4
+ 12809    | 3A         |         88.5 |          1
+ 12809    | SL         |         85.9 |          2
+ 12809    | 2A         |         83.0 |          3
+ 12839    | 3A         |         86.9 |          1
+ 12839    | SL         |         83.3 |          2
+ 12839    | 2A         |         73.8 |          3
+ 12951    | 3A         |         92.1 |          1
+ 12951    | 2A         |         91.4 |          2
+ 12951    | 1A         |         81.8 |          3
+ 22439    | CC         |         89.7 |          1
+ 22439    | EC         |         87.2 |          2
+
+=== Q03. Busiest segment of every train (segment explosion with generate_series) ===
+ train_no | busiest_segment | pax_on_segment 
+----------+-----------------+----------------
+ 12621    | BPL -> JHS      |           6563
+ 12627    | ET -> BPL       |           6371
+ 12658    | KPD -> AJJ      |           5552
+ 12809    | BSP -> ROU      |           5498
+ 12839    | RJY -> VJA      |           5381
+ 12301    | DDU -> PRYJ     |           4669
+ 12951    | BRC -> RTM      |           4183
+ 12002    | GWL -> JHS      |           3415
+ 22439    | LDH -> JAT      |           3190
+ 12009    | ST -> BRC       |           2347
+
+=== Q04. Occupancy profile along the route: 12627 Karnataka Express, 3A & SL (avg per run) ===
+ segment  | avg_3a_occupied | avg_sl_occupied 
+----------+-----------------+-----------------
+ SBC-ATP  |             227 |             445
+ ATP-GTL  |             238 |             482
+ GTL-RC   |             252 |             510
+ RC-WADI  |             263 |             530
+ WADI-SUR |             276 |             543
+ SUR-DD   |             285 |             554
+ DD-MMR   |             284 |             562
+ MMR-BSL  |             285 |             565
+ BSL-ET   |             295 |             567
+ ET-BPL   |             295 |             569
+ BPL-JHS  |             289 |             561
+ JHS-AGC  |             273 |             548
+ AGC-NDLS |             265 |             517
+
+=== Q05. Seat fragmentation (gaps & islands): free 1-segment holes nobody can buy end-to-end ===
+ train_no | internal_gaps | one_segment_holes | avg_gap_segments 
+----------+---------------+-------------------+------------------
+ 12627    |           601 |               403 |             1.45
+ 12809    |           497 |               333 |             1.45
+ 12621    |           423 |               316 |             1.31
+ 12839    |           386 |               249 |             1.62
+ 12301    |           167 |               139 |             1.20
+ 12658    |           120 |               101 |             1.16
+ 12951    |           110 |               102 |             1.08
+ 12009    |            53 |                38 |             1.28
+ 12002    |            42 |                41 |             1.02
+ 22439    |            28 |                24 |             1.14
+
+=== Q06. Unused quota released at chart time (Tatkal / Ladies / Senior berths re-used by GN) ===
+ class_code | berth_quota | passenger_quota | passengers_seated 
+------------+-------------+-----------------+-------------------
+ SL         | SS          | GN              |               392
+ CC         | GN          | TQ              |               327
+ SL         | GN          | TQ              |               247
+ 3A         | SS          | GN              |               197
+ 3A         | GN          | TQ              |               173
+ SL         | SS          | TQ              |               168
+ 2A         | GN          | TQ              |               111
+ 3A         | LD          | GN              |                94
+ 2S         | GN          | TQ              |                81
+ 3A         | SS          | TQ              |                71
+ 2A         | SS          | GN              |                64
+ SL         | LD          | GN              |                54
+ EC         | GN          | TQ              |                53
+ 3A         | LD          | TQ              |                48
+ 2A         | TQ          | GN              |                47
+ SL         | LD          | TQ              |                40
+ 2A         | SS          | TQ              |                40
+ SL         | TQ          | GN              |                24
+ 3A         | TQ          | GN              |                20
+
+=== Q07. Will my waitlist confirm? Final outcome by initial WL number (charted runs) ===
+ bucket | wl_range | passengers | pct_cnf | pct_can_board 
+--------+----------+------------+---------+---------------
+      1 | 1-19     |        971 |    10.9 |          53.6
+      2 | 20-39    |        483 |     5.6 |          30.6
+      3 | 40-59    |        234 |     3.8 |          13.7
+      4 | 60-79    |        123 |     5.7 |           7.3
+      5 | 80-99    |         84 |     8.3 |          11.9
+      6 | 100-119  |         70 |     2.9 |           5.7
+      7 | 120-139  |         30 |     6.7 |           6.7
+      8 | 140-159  |         39 |     0.0 |           0.0
+      9 | 160-167  |          9 |     0.0 |           0.0
+
+=== Q08. WL clearance by train & class: how deep into the queue did confirmations reach? ===
+ train_no | class_code | wl_issued | deepest_wl_confirmed | avg_wl_confirmed 
+----------+------------+-----------+----------------------+------------------
+ 12951    | 3A         |       421 |                  129 |             76.9
+ 12627    | 3A         |       338 |                   82 |             29.5
+ 12301    | 3A         |       169 |                  120 |             68.1
+ 12951    | 2A         |       160 |                   45 |             24.0
+ 12627    | 2A         |       155 |                   23 |              5.4
+ 12627    | SL         |       146 |                  102 |             74.3
+ 12809    | 3A         |       119 |                   30 |             17.6
+ 12658    | SL         |       117 |                      |                 
+ 12621    | 2A         |       114 |                   14 |             10.0
+ 12621    | 3A         |       110 |                   45 |             22.0
+ 12301    | 2A         |        90 |                   49 |             23.5
+ 12809    | 2A         |        76 |                   24 |             12.0
+ 12951    | 1A         |        73 |                    4 |              2.5
+ 22439    | EC         |        70 |                   11 |              5.4
+ 22439    | CC         |        63 |                   15 |              5.8
+
+=== Q09. Time-to-confirm for RAC/WL passengers (median and p90, PERCENTILE_CONT) ===
+ first_status | eventually_confirmed |      median_wait       |        p90_wait         
+--------------+----------------------+------------------------+-------------------------
+ RAC          |                 2108 | 2 days 19:02:25.743215 | 11 days 03:50:35.426617
+ WL           |                 1903 | 1 day 02:42:08.163965  | 1 day 08:41:05.134864
+
+=== Q10. Most common passenger status journeys (path strings from the audit trail) ===
+      path       | passengers |  pct  
+-----------------+------------+-------
+ CNF             |     102793 | 77.51
+ CNF > CAN       |      13113 |  9.89
+ WL > CAN        |       6555 |  4.94
+ RAC             |       2898 |  2.19
+ RAC > CNF       |       1928 |  1.45
+ WL > CNF        |       1841 |  1.39
+ WL              |       1648 |  1.24
+ RAC > CAN       |        854 |  0.64
+ WL > RAC        |        693 |  0.52
+ RAC > CNF > CAN |        180 |  0.14
+ WL > RAC > CAN  |         56 |  0.04
+ WL > RAC > CNF  |         39 |  0.03
+
+=== Q11. Split families: live PNRs with mixed statuses or spread across coaches ===
+ pax_count | group_pnrs | pct_mixed_status | pct_split_coaches 
+-----------+------------+------------------+-------------------
+         2 |      18509 |              0.5 |               8.2
+         3 |       6934 |              1.2 |              12.3
+         4 |       7347 |              2.0 |              17.4
+         5 |       2293 |              1.7 |              19.8
+         6 |       1865 |              2.0 |              21.2
+
+=== Q12. Predictor in action: chance of confirmation for live waitlisted passengers ===
+    pnr     | train_no | class_code | boarding_date | booking_status | current_status |                    prediction                     
+------------+----------+------------+---------------+----------------+----------------+---------------------------------------------------
+ 2161376783 | 12002    | EC         | 2026-11-21    | GNWL/12        | WL 5           | no history for this waitlist depth
+ 6255288204 | 12301    | 1A         | 2026-11-22    | GNWL/22        | WL 17          | 0% chance (based on 3 past WL 21-30 passengers)
+ 6270468927 | 12301    | 2A         | 2026-11-20    | GNWL/28        | WL 18          | 20% chance (based on 5 past WL 21-30 passengers)
+ 6269835407 | 12301    | 3A         | 2026-11-16    | GNWL/19        | WL 12          | 0% chance (based on 21 past WL 11-20 passengers)
+ 4236757744 | 12621    | 1A         | 2026-11-18    | GNWL/10        | WL 8           | 16% chance (based on 32 past WL 1-10 passengers)
+ 4269566161 | 12621    | 2A         | 2026-11-18    | GNWL/18        | WL 16          | 3% chance (based on 38 past WL 11-20 passengers)
+ 2268299121 | 12621    | 3A         | 2026-11-22    | GNWL/23        | WL 11          | 0% chance (based on 16 past WL 21-30 passengers)
+ 4253625214 | 12627    | 2A         | 2026-11-20    | GNWL/18        | WL 13          | 0% chance (based on 53 past WL 11-20 passengers)
+ 4270484765 | 12627    | 3A         | 2026-11-20    | GNWL/69        | WL 46          | 0% chance (based on 20 past WL 61-70 passengers)
+ 4212113816 | 12658    | 2A         | 2026-11-16    | GNWL/20        | WL 10          | 0% chance (based on 8 past WL 11-20 passengers)
+ 4267990280 | 12658    | 2S         | 2026-11-21    | GNWL/35        | WL 14          | no history for this waitlist depth
+ 8219114212 | 12809    | 2A         | 2026-11-21    | GNWL/11        | WL 4           | 24% chance (based on 17 past WL 11-20 passengers)
+ 6235688679 | 12839    | 2A         | 2026-11-17    | GNWL/8         | WL 7           | 31% chance (based on 13 past WL 1-10 passengers)
+ 8267847738 | 12951    | 1A         | 2026-11-19    | GNWL/20        | WL 18          | 0% chance (based on 22 past WL 11-20 passengers)
+ 8267206299 | 12951    | 2A         | 2026-11-23    | GNWL/57        | WL 45          | no history for this waitlist depth
+ 8255905886 | 12951    | 3A         | 2026-11-22    | GNWL/54        | WL 36          | 0% chance (based on 18 past WL 51-60 passengers)
+ 2270096734 | 22439    | CC         | 2026-11-18    | GNWL/18        | WL 16          | 0% chance (based on 10 past WL 11-20 passengers)
+ 2254116192 | 22439    | EC         | 2026-11-22    | GNWL/20        | WL 19          | 7% chance (based on 14 past WL 11-20 passengers)
+
+=== Q13. Lost demand: REGRET & unconfirmed attempts, and the revenue they represent ===
+ train_no | class_code | rejected_requests | rejected_passengers | revenue_at_risk 
+----------+------------+-------------------+---------------------+-----------------
+ 12951    | 3A         |                67 |                 174 |          462200
+ 12301    | 3A         |                62 |                 149 |          401585
+ 12621    | 3A         |                63 |                 149 |          373310
+ 12627    | 3A         |                42 |                 111 |          341685
+ 12627    | SL         |                82 |                 190 |          218435
+ 12621    | 2A         |                21 |                  50 |          195125
+ 12809    | 3A         |                27 |                  66 |          153470
+ 12621    | SL         |                69 |                 161 |          146870
+ 12839    | 3A         |                27 |                  73 |          141360
+ 12809    | SL         |                64 |                 170 |          128285
+ 12951    | 2A         |                18 |                  35 |          112535
+ 12301    | 2A         |                11 |                  20 |           67520
+
+=== Q14. Top origin-destination pairs by passengers and net revenue ===
+   od_pair    | pnrs | travelling_pax | net_revenue 
+--------------+------+----------------+-------------
+ HWH -> NDLS  | 3369 |           6092 | 22288876.25
+ MAS -> NDLS  | 4784 |           8651 | 21405618.75
+ SBC -> NDLS  | 4916 |           8577 | 20275510.00
+ MMCT -> NDLS | 3163 |           5482 | 19665967.50
+ CSMT -> HWH  | 3744 |           6836 | 11782806.25
+ HWH -> MAS   | 3568 |           6667 | 10600833.75
+ NDLS -> SVDK | 2189 |           4197 |  6873781.25
+ NDLS -> BPL  | 2096 |           4146 |  6034150.00
+ MMCT -> ADI  | 1515 |           2973 |  3350775.00
+ SBC -> MAS   | 3934 |           7098 |  2184340.00
+ KOTA -> NDLS |  380 |            711 |  1048211.25
+ CNB -> NDLS  |  365 |            727 |  1022741.25
+
+=== Q15. Booking lead time (days before departure) by quota ===
+ quota_code |    lead_bucket    | pnrs  | pct_of_quota 
+------------+-------------------+-------+--------------
+ GN         | 0 (same/prev day) |  1158 |          2.5
+ GN         | 1-6               |  5555 |         11.8
+ GN         | 7-14              |  6541 |         13.9
+ GN         | 15-29             |  9235 |         19.6
+ GN         | 30-49             |  9881 |         21.0
+ GN         | 50-60             | 14781 |         31.3
+ LD         | 0 (same/prev day) |    10 |          2.1
+ LD         | 1-6               |    43 |          9.1
+ LD         | 7-14              |    37 |          7.9
+ LD         | 15-29             |    85 |         18.1
+ LD         | 30-49             |   107 |         22.8
+ LD         | 50-60             |   188 |         40.0
+ SS         | 0 (same/prev day) |    41 |          2.3
+ SS         | 1-6               |   215 |         12.2
+ SS         | 7-14              |   213 |         12.1
+ SS         | 15-29             |   375 |         21.3
+ SS         | 30-49             |   388 |         22.1
+ SS         | 50-60             |   526 |         29.9
+ TQ         | 0 (same/prev day) |  1377 |         13.3
+ TQ         | 1-6               |  8950 |         86.7
+
+=== Q16. Tatkal sell-out speed: minutes from window opening until the first Tatkal waitlist ticket ===
+ train_no | class_code | runs | runs_sold_out | avg_minutes_to_sellout 
+----------+------------+------+---------------+------------------------
+ 12658    | SL         |    8 |             8 |                    2.8
+ 12627    | SL         |    8 |             8 |                    2.9
+ 22439    | EC         |    7 |             7 |                    3.0
+ 12627    | 3A         |    8 |             8 |                    3.0
+ 12951    | 3A         |    8 |             8 |                    3.2
+ 12658    | 2A         |    8 |             7 |                    3.2
+ 12009    | EC         |    7 |             1 |                    3.5
+ 12621    | SL         |    8 |             8 |                    3.5
+ 12809    | 3A         |    8 |             8 |                    3.7
+ 12627    | 2A         |    8 |             6 |                    3.8
+ 12301    | 3A         |    8 |             8 |                    3.8
+ 12809    | SL         |    8 |             8 |                    3.9
+
+=== Q17. Daily bookings revenue with running total and 7-day moving average ===
+ booking_day |   gross    | running_total |  ma_7d  | wow_pct 
+-------------+------------+---------------+---------+---------
+ 2026-11-15  | 6663620.00 |  199810150.00 | 7703781 |   -16.7
+ 2026-11-14  | 8045315.00 |  193146530.00 | 7894372 |   163.9
+ 2026-11-13  | 7239005.00 |  185101215.00 | 7180485 |   144.2
+ 2026-11-12  | 8498085.00 |  177862210.00 | 6569902 |   170.7
+ 2026-11-11  | 7391475.00 |  169364125.00 | 5804359 |   151.7
+ 2026-11-10  | 8310275.00 |  161972650.00 | 5168008 |   210.3
+ 2026-11-09  | 7778690.00 |  153662375.00 | 4363379 |   177.3
+ 2026-11-08  | 7997760.00 |  145883685.00 | 3652894 |   208.2
+ 2026-11-07  | 3048105.00 |  137885925.00 | 2881053 |    21.0
+ 2026-11-06  | 2964925.00 |  134837820.00 | 2805565 |    26.8
+ 2026-11-05  | 3139280.00 |  131872895.00 | 2716139 |    40.9
+ 2026-11-04  | 2937020.00 |  128733615.00 | 2585908 |    45.1
+ 2026-11-03  | 2677875.00 |  125796595.00 | 2455573 |    11.6
+ 2026-11-02  | 2805295.00 |  123118720.00 | 2415962 |    30.4
+
+=== Q18. Class P&L: gross fare, refunds paid, cancellation income, share of net ===
+ class_code | gross_fare  | refunds_paid | cancellation_income | net_revenue | pct_of_net 
+------------+-------------+--------------+---------------------+-------------+------------
+ 3A         | 97101460.00 |  16351962.50 |          1481632.50 | 80749497.50 |       48.2
+ 2A         | 35236175.00 |   6459880.00 |           422775.00 | 28776295.00 |       17.2
+ SL         | 32720980.00 |   5034842.50 |           911472.50 | 27686137.50 |       16.5
+ CC         | 19787230.00 |   1875558.75 |           514566.25 | 17911671.25 |       10.7
+ 1A         |  8537405.00 |   1777756.25 |            55653.75 |  6759648.75 |        4.0
+ EC         |  6054600.00 |    712623.75 |           109876.25 |  5341976.25 |        3.2
+ 2S         |   372300.00 |     21235.00 |            29945.00 |   351065.00 |        0.2
+
+=== Q19. Cancellations: when do people cancel and what does it cost them? ===
+ status_at_cancel |   reason   | window | passengers | avg_charge | pct_refunded 
+------------------+------------+--------+------------+------------+--------------
+ CNF              | USER       | >48h   |      11713 |        158 |         89.0
+ CNF              | USER       | 12-48h |       1143 |        625 |         52.8
+ CNF              | USER       | 4-12h  |        326 |        951 |         26.0
+ CNF              | USER       | <4h    |        134 |       1514 |          0.0
+ RAC              | USER       | >48h   |        511 |         60 |         97.1
+ RAC              | USER       | 12-48h |        265 |         60 |         96.6
+ RAC              | USER       | 4-12h  |        110 |         59 |         96.2
+ RAC              | USER       | <4h    |         24 |         60 |         97.3
+ WL               | CHART_AUTO | 12-48h |        577 |         60 |         94.8
+ WL               | CHART_AUTO | 4-12h  |       5338 |         60 |         97.5
+ WL               | USER       | >48h   |        192 |         60 |         98.0
+ WL               | USER       | 12-48h |        308 |         60 |         97.6
+ WL               | USER       | 4-12h  |        138 |         60 |         97.6
+ WL               | USER       | <4h    |          2 |         60 |         97.1
+
+=== Q20. Weekday demand index (journey weekday vs average, from all attempts) ===
+ weekday | attempts | demand_index | pct_rejected 
+---------+----------+--------------+--------------
+ Mon     |     9615 |         1.11 |          1.1
+ Tue     |     8071 |         0.93 |          1.1
+ Wed     |     8416 |         0.97 |          1.1
+ Thu     |     7820 |         0.91 |          1.2
+ Fri     |     9150 |         1.06 |          1.4
+ Sat     |     8496 |         0.98 |          1.0
+ Sun     |     8880 |         1.03 |          1.6
+
+=== Q21. Tatkal power users: bookings within 5 minutes of opening, z-score vs everyone ===
+ user_id |    full_name    | tq_bookings | first_5min | z_score 
+---------+-----------------+-------------+------------+---------
+      12 | Pranav Ansari   |         177 |        136 |    18.9
+      10 | Karthik Pillai  |         173 |        120 |    16.6
+       7 | Vikram Pillai   |         154 |        118 |    16.3
+      13 | Anil Chauhan    |         157 |        117 |    16.2
+       4 | Abhishek Das    |         163 |        115 |    15.9
+      15 | Nandini Kumar   |         164 |        110 |    15.2
+       2 | Siddharth Menon |         143 |        108 |    14.9
+       3 | Radha Gill      |         155 |        107 |    14.8
+       5 | Anil Mukherjee  |         160 |        107 |    14.8
+       8 | Shreya Dubey    |         139 |         99 |    13.6
+       9 | Arjun Chauhan   |         143 |         98 |    13.5
+       6 | Vivaan Nair     |         151 |         98 |    13.5
+      14 | Tanvi Mishra    |         136 |         97 |    13.4
+       1 | Suresh Kulkarni |         129 |         93 |    12.8
+      11 | Imran Tiwari    |         120 |         83 |    11.4
+
+=== Q22. Customer value tiers (NTILE on net spend) ===
+ tier | users | avg_pnrs | avg_net_spend | pct_of_revenue 
+------+-------+----------+---------------+----------------
+    1 |   997 |     17.2 |         64774 |           39.9
+    2 |   996 |     15.2 |         44106 |           27.1
+    3 |   996 |     13.7 |         33014 |           20.3
+    4 |   996 |     11.5 |         20548 |           12.6
+
+=== Q23. Berth preference fulfilment, and lower berths for seniors / women 45+ ===
+ class_code | pct_pref_met | pct_seniors_on_lower | pct_others_on_lower 
+------------+--------------+----------------------+---------------------
+ 1A         |         50.1 |                 86.6 |                39.4
+ 2A         |         74.1 |                 81.3 |                37.9
+ 3A         |         83.0 |                 73.4 |                21.9
+ SL         |         78.6 |                 70.4 |                18.7
+
+=== Q24. Channel mix and outcome by channel ===
+ channel | pnrs  | pct_pnrs | pct_cnf_at_booking 
+---------+-------+----------+--------------------
+ APP     | 35869 |     60.1 |               87.1
+ WEB     | 21915 |     36.7 |               87.7
+ COUNTER |  1922 |      3.2 |               88.9
+
+=== Q25. Double-booking audit (self-join on overlapping ranges) ===
+ overlapping_pairs 
+-------------------
+                 0
+
+=== Q26. Status / allocation consistency ===
+ seated_without_allocation | unseated_holding_berth | cancelled_without_refund_row | fare_mismatch 
+---------------------------+------------------------+------------------------------+---------------
+                         0 |                      0 |                            0 |             0
+

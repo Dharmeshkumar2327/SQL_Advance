@@ -1,0 +1,66 @@
+--- 1. Search trains Bhopal -> New Delhi boarding on 20 Nov, with live availability
+ train_no |     train_name     |   departs    |   arrives    | duration | class_code | fare |  availability  
+----------+--------------------+--------------+--------------+----------+------------+------+----------------
+ 12627    | Karnataka Express  | 20 Nov 23:20 | 21 Nov 09:40 | 10:20:00 | 2A         | 1540 | AVAILABLE-0009
+ 12627    | Karnataka Express  | 20 Nov 23:20 | 21 Nov 09:40 | 10:20:00 | 3A         | 1085 | AVAILABLE-0012
+ 12627    | Karnataka Express  | 20 Nov 23:20 | 21 Nov 09:40 | 10:20:00 | SL         |  390 | AVAILABLE-0008
+ 12621    | Tamil Nadu Express | 20 Nov 23:55 | 21 Nov 09:35 | 09:40:00 | 1A         | 2565 | AVAILABLE-0009
+ 12621    | Tamil Nadu Express | 20 Nov 23:55 | 21 Nov 09:35 | 09:40:00 | 2A         | 1530 | AVAILABLE-0017
+ 12621    | Tamil Nadu Express | 20 Nov 23:55 | 21 Nov 09:35 | 09:40:00 | 3A         | 1080 | RAC 28
+ 12621    | Tamil Nadu Express | 20 Nov 23:55 | 21 Nov 09:35 | 09:40:00 | SL         |  390 | AVAILABLE-0003
+
+--- 2. Book a family of three on 12627 Karnataka Express, 3A
+    pnr     | passenger_no | passenger_name | status | status_label | fare 
+------------+--------------+----------------+--------+--------------+------
+ 8270730254 |            1 | Dharmesh Kumar | CNF    | CNF/B2/54/UB | 1085
+ 8270730254 |            2 | Priya Kumar    | CNF    | CNF/B3/26/MB | 1085
+ 8270730254 |            3 | Sita Devi      | CNF    | CNF/B3/36/LB | 1085
+
+--- 3. PNR enquiry
+    pnr     | train_no | boarding_date | from_station | to_station | class_code | passenger_no |   full_name    | booking_status | current_status |    chart_status    
+------------+----------+---------------+--------------+------------+------------+--------------+----------------+----------------+----------------+--------------------
+ 8270730254 | 12627    | 2026-11-20    | BPL          | NDLS       | 3A         |            1 | Dharmesh Kumar | CNF/B2/54/UB   | CNF/B2/54/UB   | CHART NOT PREPARED
+ 8270730254 | 12627    | 2026-11-20    | BPL          | NDLS       | 3A         |            3 | Sita Devi      | CNF/B3/36/LB   | CNF/B3/36/LB   | CHART NOT PREPARED
+ 8270730254 | 12627    | 2026-11-20    | BPL          | NDLS       | 3A         |            2 | Priya Kumar    | CNF/B3/26/MB   | CNF/B3/26/MB   | CHART NOT PREPARED
+
+--- 4. Pick the busiest live waitlist and look at the head of its queue
+ train_no | journey_date | journey_id | class_code | quota_code | waiting 
+----------+--------------+------------+------------+------------+---------
+ 12627    | 2026-11-22   |        128 | 3A         | GN         |      70
+
+    pnr     | passenger_no |  full_name   | booking_status | status_before 
+------------+--------------+--------------+----------------+---------------
+ 4091911315 |            1 | Usha Verma   | RAC/16         | RAC 1
+ 4091911315 |            2 | Faisal Rao   | RAC/17         | RAC 2
+ 4093146679 |            1 | Ishita Patel | RAC/18         | RAC 3
+ 4093146679 |            2 | Pranav Dubey | RAC/19         | RAC 4
+ 4093146679 |            3 | Ishita Verma | RAC/20         | RAC 5
+ 4093146679 |            4 | Saanvi Rao   | RAC/21         | RAC 6
+
+--- 5. A confirmed end-to-end passenger in that pool cancels (refund rules apply) ...
+ passenger_no | status_before |  fare   | charge | refund  
+--------------+---------------+---------+--------+---------
+            1 | CNF           | 3670.00 | 180.00 | 3490.00
+            2 | CNF           | 3670.00 | 180.00 | 3490.00
+
+--- ... and the queue moves on its own: RAC -> CNF, WL -> RAC
+    pnr     |  full_name   | booking_status | status_before |  status_now  
+------------+--------------+----------------+---------------+--------------
+ 4091911315 | Usha Verma   | RAC/16         | RAC 1         | CNF/B3/48/SU
+ 4091911315 | Faisal Rao   | RAC/17         | RAC 2         | CNF/B3/57/LB
+ 4093146679 | Ishita Patel | RAC/18         | RAC 3         | RAC 1
+ 4093146679 | Pranav Dubey | RAC/19         | RAC 4         | RAC 2
+ 4093146679 | Ishita Verma | RAC/20         | RAC 5         | RAC 3
+ 4093146679 | Saanvi Rao   | RAC/21         | RAC 6         | RAC 4
+
+--- 6. Full audit trail of the first passenger in that queue
+            changed_at            | old_status | new_status | status_label |  reason  
+----------------------------------+------------+------------+--------------+----------
+ 2026-11-03 21:50:33.008987+05:30 |            | RAC        | RAC/16       | BOOKED
+ 2026-11-15 23:00:00+05:30        | RAC        | CNF        | CNF/B3/48/SU | PROMOTED
+
+--- 7. Waitlist prediction from history
+                 12627 3A GNWL 15                 |                 12951 3A GNWL 40                 
+--------------------------------------------------+--------------------------------------------------
+ 5% chance (based on 40 past WL 11-20 passengers) | 3% chance (based on 32 past WL 31-40 passengers)
+

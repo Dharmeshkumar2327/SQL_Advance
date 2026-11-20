@@ -1,0 +1,16 @@
+# One-command local database:
+#   docker compose up -d
+#   docker compose exec -u postgres -w /work db ./run_all.sh
+#   docker compose exec -u postgres db psql -d railway
+services:
+  db:
+    image: postgres:16
+    container_name: rail-booking-db
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: railway
+      TZ: Asia/Kolkata
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./:/work
