@@ -8,3 +8,8 @@
 This project demonstrates how SQL can support hospital operations reporting. It includes a relational schema, reproducible synthetic data generation, 30 analytical SQL questions, reusable views, and indexing/query-plan exploration.
 
 Start with `README.md` for installation and execution instructions.
+
+## Author
+
+**Dharmesh Kumar**  
+GitHub: https://github.com/Dharmeshkumar2327

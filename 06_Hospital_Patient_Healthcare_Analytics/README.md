@@ -132,7 +132,13 @@ The performance script creates indexes on common filter and join columns, runs `
 
 ## Author
 
-Add your name, LinkedIn, and GitHub profile here before publishing.
+**Dharmesh Kumar**  
+Data Analyst | SQL | Python | Power BI | Data Science
+
+- GitHub: [Dharmeshkumar2327](https://github.com/Dharmeshkumar2327)
+
+This project was designed and developed by Dharmesh Kumar as an advanced SQL portfolio project.
+
 
 ## License
 
