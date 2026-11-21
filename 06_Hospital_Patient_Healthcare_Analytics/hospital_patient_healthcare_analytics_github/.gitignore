@@ -1,0 +1,21 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Local environment and secrets
+.env
+.env.*
+*.pem
+*.key
+
+# Database dumps and local exports
+*.dump
+*.backup
+*.sql.gz
+*.csv
+!data/sample_*.csv
+
+# Logs
+*.log
