@@ -1,0 +1,13 @@
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
+
+# Python (optional extensions)
+__pycache__/
+*.py[cod]
+.venv/
+
+# Secrets and local environment
+.env
+*.log
